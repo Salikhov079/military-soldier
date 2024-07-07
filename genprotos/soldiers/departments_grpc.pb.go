@@ -19,11 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	DepartmentService_Create_FullMethodName = "/department.DepartmentService/Create"
-	DepartmentService_Update_FullMethodName = "/department.DepartmentService/Update"
-	DepartmentService_Delete_FullMethodName = "/department.DepartmentService/Delete"
-	DepartmentService_Get_FullMethodName    = "/department.DepartmentService/Get"
-	DepartmentService_GetAll_FullMethodName = "/department.DepartmentService/GetAll"
+	DepartmentService_Create_FullMethodName = "/departments.DepartmentService/Create"
+	DepartmentService_Update_FullMethodName = "/departments.DepartmentService/Update"
+	DepartmentService_Delete_FullMethodName = "/departments.DepartmentService/Delete"
+	DepartmentService_Get_FullMethodName    = "/departments.DepartmentService/Get"
+	DepartmentService_GetAll_FullMethodName = "/departments.DepartmentService/GetAll"
 )
 
 // DepartmentServiceClient is the client API for DepartmentService service.
@@ -228,7 +228,7 @@ func _DepartmentService_GetAll_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DepartmentService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "department.DepartmentService",
+	ServiceName: "departments.DepartmentService",
 	HandlerType: (*DepartmentServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -4,11 +4,10 @@
 // - protoc             v3.12.4
 // source: commanders.proto
 
-package soldier
+package soldiers
 
 import (
 	context "context"
-	soldiers "genprotos/soldiers"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -20,21 +19,21 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	CommanderService_Create_FullMethodName = "/commander.CommanderService/Create"
-	CommanderService_Update_FullMethodName = "/commander.CommanderService/Update"
-	CommanderService_Delete_FullMethodName = "/commander.CommanderService/Delete"
-	CommanderService_Get_FullMethodName    = "/commander.CommanderService/Get"
-	CommanderService_GetAll_FullMethodName = "/commander.CommanderService/GetAll"
+	CommanderService_Create_FullMethodName = "/commanders.CommanderService/Create"
+	CommanderService_Update_FullMethodName = "/commanders.CommanderService/Update"
+	CommanderService_Delete_FullMethodName = "/commanders.CommanderService/Delete"
+	CommanderService_Get_FullMethodName    = "/commanders.CommanderService/Get"
+	CommanderService_GetAll_FullMethodName = "/commanders.CommanderService/GetAll"
 )
 
 // CommanderServiceClient is the client API for CommanderService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CommanderServiceClient interface {
-	Create(ctx context.Context, in *CommanderReq, opts ...grpc.CallOption) (*soldiers.Void, error)
-	Update(ctx context.Context, in *Commander, opts ...grpc.CallOption) (*soldiers.Void, error)
-	Delete(ctx context.Context, in *soldiers.ById, opts ...grpc.CallOption) (*soldiers.Void, error)
-	Get(ctx context.Context, in *soldiers.ById, opts ...grpc.CallOption) (*Commander, error)
+	Create(ctx context.Context, in *CommanderReq, opts ...grpc.CallOption) (*Void, error)
+	Update(ctx context.Context, in *Commander, opts ...grpc.CallOption) (*Void, error)
+	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
+	Get(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Commander, error)
 	GetAll(ctx context.Context, in *CommanderReq, opts ...grpc.CallOption) (*AllCommanders, error)
 }
 
@@ -46,8 +45,8 @@ func NewCommanderServiceClient(cc grpc.ClientConnInterface) CommanderServiceClie
 	return &commanderServiceClient{cc}
 }
 
-func (c *commanderServiceClient) Create(ctx context.Context, in *CommanderReq, opts ...grpc.CallOption) (*soldiers.Void, error) {
-	out := new(soldiers.Void)
+func (c *commanderServiceClient) Create(ctx context.Context, in *CommanderReq, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
 	err := c.cc.Invoke(ctx, CommanderService_Create_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -55,8 +54,8 @@ func (c *commanderServiceClient) Create(ctx context.Context, in *CommanderReq, o
 	return out, nil
 }
 
-func (c *commanderServiceClient) Update(ctx context.Context, in *Commander, opts ...grpc.CallOption) (*soldiers.Void, error) {
-	out := new(soldiers.Void)
+func (c *commanderServiceClient) Update(ctx context.Context, in *Commander, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
 	err := c.cc.Invoke(ctx, CommanderService_Update_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -64,8 +63,8 @@ func (c *commanderServiceClient) Update(ctx context.Context, in *Commander, opts
 	return out, nil
 }
 
-func (c *commanderServiceClient) Delete(ctx context.Context, in *soldiers.ById, opts ...grpc.CallOption) (*soldiers.Void, error) {
-	out := new(soldiers.Void)
+func (c *commanderServiceClient) Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
 	err := c.cc.Invoke(ctx, CommanderService_Delete_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -73,7 +72,7 @@ func (c *commanderServiceClient) Delete(ctx context.Context, in *soldiers.ById, 
 	return out, nil
 }
 
-func (c *commanderServiceClient) Get(ctx context.Context, in *soldiers.ById, opts ...grpc.CallOption) (*Commander, error) {
+func (c *commanderServiceClient) Get(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Commander, error) {
 	out := new(Commander)
 	err := c.cc.Invoke(ctx, CommanderService_Get_FullMethodName, in, out, opts...)
 	if err != nil {
@@ -95,10 +94,10 @@ func (c *commanderServiceClient) GetAll(ctx context.Context, in *CommanderReq, o
 // All implementations must embed UnimplementedCommanderServiceServer
 // for forward compatibility
 type CommanderServiceServer interface {
-	Create(context.Context, *CommanderReq) (*soldiers.Void, error)
-	Update(context.Context, *Commander) (*soldiers.Void, error)
-	Delete(context.Context, *soldiers.ById) (*soldiers.Void, error)
-	Get(context.Context, *soldiers.ById) (*Commander, error)
+	Create(context.Context, *CommanderReq) (*Void, error)
+	Update(context.Context, *Commander) (*Void, error)
+	Delete(context.Context, *ById) (*Void, error)
+	Get(context.Context, *ById) (*Commander, error)
 	GetAll(context.Context, *CommanderReq) (*AllCommanders, error)
 	mustEmbedUnimplementedCommanderServiceServer()
 }
@@ -107,16 +106,16 @@ type CommanderServiceServer interface {
 type UnimplementedCommanderServiceServer struct {
 }
 
-func (UnimplementedCommanderServiceServer) Create(context.Context, *CommanderReq) (*soldiers.Void, error) {
+func (UnimplementedCommanderServiceServer) Create(context.Context, *CommanderReq) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedCommanderServiceServer) Update(context.Context, *Commander) (*soldiers.Void, error) {
+func (UnimplementedCommanderServiceServer) Update(context.Context, *Commander) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedCommanderServiceServer) Delete(context.Context, *soldiers.ById) (*soldiers.Void, error) {
+func (UnimplementedCommanderServiceServer) Delete(context.Context, *ById) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedCommanderServiceServer) Get(context.Context, *soldiers.ById) (*Commander, error) {
+func (UnimplementedCommanderServiceServer) Get(context.Context, *ById) (*Commander, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedCommanderServiceServer) GetAll(context.Context, *CommanderReq) (*AllCommanders, error) {
@@ -172,7 +171,7 @@ func _CommanderService_Update_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _CommanderService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(soldiers.ById)
+	in := new(ById)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -184,13 +183,13 @@ func _CommanderService_Delete_Handler(srv interface{}, ctx context.Context, dec 
 		FullMethod: CommanderService_Delete_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommanderServiceServer).Delete(ctx, req.(*soldiers.ById))
+		return srv.(CommanderServiceServer).Delete(ctx, req.(*ById))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CommanderService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(soldiers.ById)
+	in := new(ById)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -202,7 +201,7 @@ func _CommanderService_Get_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: CommanderService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CommanderServiceServer).Get(ctx, req.(*soldiers.ById))
+		return srv.(CommanderServiceServer).Get(ctx, req.(*ById))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -229,7 +228,7 @@ func _CommanderService_GetAll_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CommanderService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "commander.CommanderService",
+	ServiceName: "commanders.CommanderService",
 	HandlerType: (*CommanderServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
