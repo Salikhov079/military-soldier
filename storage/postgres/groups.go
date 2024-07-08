@@ -140,7 +140,7 @@ func (p *GroupStorage) checkPostion(group *pb.GroupReq) error {
 			return err
 		}
 	}
-	if count == 1000 {
+	if count == 10000 {
 		_, err = p.db.Exec("UPDATE commander SET position = 'qomondon' WHERE id = $1", com)
 		if err != nil {
 			return err
