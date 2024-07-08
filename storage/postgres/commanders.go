@@ -21,10 +21,10 @@ func NewCommanderStorage(db *sql.DB) *CommanderStorage {
 func (p *CommanderStorage) Create(commander *pb.CommanderReq) (*pb.Void, error) {
 	id := uuid.NewString()
 	query := `
-		INSERT INTO commanders (id, name, email, date_of_birth, phone_number, position)
-		VALUES ($1, $2, $3, $4, $5, $6)
+		INSERT INTO commanders (id, name, email, date_of_birth, phone_number)
+		VALUES ($1, $2, $3, $4, $5)
 	`
-	_, err := p.db.Exec(query, id, commander.Name, commander.Email, commander.DateOfBirth, commander.PhoneNumber, commander.Position)
+	_, err := p.db.Exec(query, id, commander.Name, commander.Email, commander.DateOfBirth, commander.PhoneNumber)
 	return nil, err
 }
 

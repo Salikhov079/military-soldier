@@ -20,18 +20,23 @@ func NewSoldierStorage(db *sql.DB) *SoldierStorage {
 }
 
 func (p *SoldierStorage) Create(soldier *pb.SoldierReq) (*pb.Void, error) {
+	var count int
+	err := p.db.QueryRow("SELECT COUNT(1) FROM soldiers WHERE group_id = $1 GROUP BY group_id", soldier.GroupId).Scan(&count)
+	if err != nil && err != sql.ErrNoRows || count == 10 {
+		return nil, errors.New("error group is full")
+	}
 	id := uuid.NewString()
 	query := `
-		INSERT INTO soldiers (id, name, email, date_of_birth, phone_number, group_id, join_date)
-		VALUES ($1, $2, $3, $4, $5, $6, $7)
+		INSERT INTO soldiers (id, name, email, date_of_birth, phone_number, group_id, join_date, end_date)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
-	_, err := p.db.Exec(query, id, soldier.Name, soldier.Email, soldier.DateOfBirth, soldier.PhoneNumber, soldier.GroupId, soldier.JoinDate)
+	_, err = p.db.Exec(query, id, soldier.Name, soldier.Email, soldier.DateOfBirth, soldier.PhoneNumber, soldier.GroupId, soldier.JoinDate, soldier.EndDate)
 	return nil, err
 }
 
 func (p *SoldierStorage) GetById(id *pb.ById) (*pb.Soldier, error) {
 	query := `
-		SELECT id, name, email, date_of_birth, phone_number, group_id, join_date FROM soldiers 
+		SELECT id, name, email, date_of_birth, phone_number, group_id, join_date, end_date FROM soldiers 
 		WHERE id = $1 and deleted_at = 0
 	`
 	row := p.db.QueryRow(query, id.Id)
@@ -46,7 +51,8 @@ func (p *SoldierStorage) GetById(id *pb.ById) (*pb.Soldier, error) {
 		&soldier.DateOfBirth,
 		&soldier.PhoneNumber,
 		&group.Id,
-		&soldier.JoinDate)
+		&soldier.JoinDate,
+		&soldier.EndDate)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +66,7 @@ func (p *SoldierStorage) GetAll(filter *pb.SoldierReq) (*pb.AllSoldiers, error) 
 	var arr []interface{}
 	count := 1
 
-	query := `SELECT id, name, email, date_of_birth, phone_number, group_id, join_date FROM soldiers WHERE deleted_at = 0`
+	query := `SELECT id, name, email, date_of_birth, phone_number, group_id, join_date, end_date FROM soldiers WHERE deleted_at = 0`
 
 	if len(filter.Name) > 0 {
 		query += fmt.Sprintf(" AND name=$%d", count)
@@ -70,6 +76,12 @@ func (p *SoldierStorage) GetAll(filter *pb.SoldierReq) (*pb.AllSoldiers, error) 
 
 	if len(filter.Email) > 0 {
 		query += fmt.Sprintf(" AND email=$%d", count)
+		count++
+		arr = append(arr, filter.Email)
+	}
+
+	if len(filter.DateOfBirth) > 0 {
+		query += fmt.Sprintf(" AND EXTRACT(YEAR FROM AGE(date_of_birth)) =$%d", count)
 		count++
 		arr = append(arr, filter.Email)
 	}
@@ -91,7 +103,8 @@ func (p *SoldierStorage) GetAll(filter *pb.SoldierReq) (*pb.AllSoldiers, error) 
 			&soldier.DateOfBirth,
 			&soldier.PhoneNumber,
 			&group.Id,
-			&soldier.JoinDate)
+			&soldier.JoinDate,
+			&soldier.EndDate)
 		if err != nil {
 			return nil, err
 		}
@@ -106,10 +119,10 @@ func (p *SoldierStorage) GetAll(filter *pb.SoldierReq) (*pb.AllSoldiers, error) 
 func (p *SoldierStorage) Update(soldier *pb.Soldier) (*pb.Void, error) {
 	query := `
 		UPDATE soldiers
-		SET name = $2, email = $3, date_of_birth = $4, phone_number = $5, group_id = $6, join_date = $7, updated_at = now()
+		SET name = $2, email = $3, date_of_birth = $4, phone_number = $5, group_id = $6, join_date = $7, end_date = $8, updated_at = now()
 		WHERE id = $1 AND deleted_at = 0
 	`
-	_, err := p.db.Exec(query, soldier.Id, soldier.Name, soldier.Email, soldier.DateOfBirth, soldier.PhoneNumber, soldier.Group.Id, soldier.JoinDate)
+	_, err := p.db.Exec(query, soldier.Id, soldier.Name, soldier.Email, soldier.DateOfBirth, soldier.PhoneNumber, soldier.Group.Id, soldier.JoinDate, soldier.EndDate)
 	return nil, err
 }
 
@@ -125,9 +138,9 @@ func (p *SoldierStorage) Delete(id *pb.ById) (*pb.Void, error) {
 func (p *SoldierStorage) UseBullet(use *pb.UseB) (*pb.Void, error) {
 	query := `
 		SELECT quantity_weapon, quantity_big_weapon FROM use_bullets
-		WHERE date = now()::date
+		WHERE date = now()::date and soldier_id = $1
 	`
-	rows, err := p.db.Query(query)
+	rows, err := p.db.Query(query, use.SoldierId)
 	if err != nil {
 		return nil, err
 	}	
@@ -146,11 +159,11 @@ func (p *SoldierStorage) UseBullet(use *pb.UseB) (*pb.Void, error) {
 
 	data1 += int(use.QuantityWeapon)
 	if data1 > 50 {
-		return nil, errors.New("error: don't use 50 more in 1 day")
+		return nil, errors.New("error: don't use more then 50 Weapons in 1 day")
 	}
 	data2 += int(use.QuantityBigWeapon)
 	if data2 > 5 {
-		return nil, errors.New("error: don't use 5 more in 1 day")
+		return nil, errors.New("error: don't use more then 5 Big Weapons in 1 day")
 	}
 
 	id := uuid.NewString()
@@ -166,9 +179,9 @@ func (p *SoldierStorage) UseBullet(use *pb.UseB) (*pb.Void, error) {
 func (p *SoldierStorage) UseFuel(use *pb.UseF) (*pb.Void, error) {
 	query := `
 		SELECT diesel, petrol FROM use_fuels
-		WHERE date = now()::date
+		WHERE date = now()::date and soldier_id = $1
 	`
-	rows, err := p.db.Query(query)
+	rows, err := p.db.Query(query, use.SoldierId)
 	if err != nil {
 		return nil, err
 	}	
@@ -187,11 +200,11 @@ func (p *SoldierStorage) UseFuel(use *pb.UseF) (*pb.Void, error) {
 
 	data1 += int(use.Diesel)
 	if data1 > 50 {
-		return nil, errors.New("error: don't use 50l more in 1 day")
+		return nil, errors.New("error: don't use more then 50l disel in 1 day")
 	}
 	data2 += int(use.Petrol)
 	if data2 > 50 {
-		return nil, errors.New("error: don't use 50l more in 1 day")
+		return nil, errors.New("error: don't use more then 50l petrol in 1 day")
 	}
 
 	id := uuid.NewString()

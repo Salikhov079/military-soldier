@@ -6,7 +6,6 @@ import (
 
 	pb "github.com/Salikhov079/military/genprotos/soldiers"
 	"github.com/Salikhov079/military/storage/postgres"
-	"github.com/google/uuid"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -18,12 +17,13 @@ func TestCreateSoldier(t *testing.T) {
 	}
 
 	soldier := &pb.SoldierReq{
-		Name:        "Your_Name",
+		Name:        "riby",
 		Email:       "e@example.com",
 		DateOfBirth: "2000-01-01T00:00:00Z",
 		PhoneNumber: "+998901234567",
-		GroupId:     "b015266e-87ef-4cba-aa1c-b70a8380415d",
+		GroupId:     "6bf3ee89-4bc2-453d-97c6-69a1697ac556",
 		JoinDate:    "2024-01-01T00:00:00Z",
+		EndDate:     "2025-01-01T00:00:00Z",
 	}
 	result, err := stg.Soldier().Create(soldier)
 
@@ -38,7 +38,7 @@ func TestGetByIdSoldier(t *testing.T) {
 	}
 
 	var id pb.ById
-	id.Id = "097ff004-a6ee-4eee-92bd-d3e0834ba10e"
+	id.Id = "720f5034-cfb5-4cc4-bb45-f1f4a307f858"
 
 	soldier, err := stg.Soldier().GetById(&id)
 
@@ -63,7 +63,7 @@ func TestUpdateSoldier(t *testing.T) {
 	}
 
 	soldier := &pb.Soldier{
-		Id:          "097ff004-a6ee-4eee-92bd-d3e0834ba10e",
+		Id:          "720f5034-cfb5-4cc4-bb45-f1f4a307f858",
 		Name:        "New_Soldier_Name",
 		Email:       "new.e@example.com",
 		DateOfBirth: "2000-01-01T00:00:00Z",
@@ -72,6 +72,7 @@ func TestUpdateSoldier(t *testing.T) {
 			Id: "b015266e-87ef-4cba-aa1c-b70a8380415d",
 		},
 		JoinDate: "2024-01-01T00:00:00Z",
+		EndDate:  "2025-01-01T00:00:00Z",
 	}
 	result, err := stg.Soldier().Update(soldier)
 
@@ -103,7 +104,7 @@ func TestUseBullet(t *testing.T) {
 	use := &pb.UseB{
 		QuantityWeapon:    50,
 		QuantityBigWeapon: 5,
-		SoldierId:         "097ff004-a6ee-4eee-92bd-d3e0834ba10e",
+		SoldierId:         "720f5034-cfb5-4cc4-bb45-f1f4a307f858",
 		Date:              "2024-07-07",
 	}
 	result, err := stg.Soldier().UseBullet(use)
@@ -121,7 +122,7 @@ func TestUseFuel(t *testing.T) {
 	use := &pb.UseF{
 		Diesel:    50,
 		Petrol:    50,
-		SoldierId: uuid.NewString(),
+		SoldierId: "720f5034-cfb5-4cc4-bb45-f1f4a307f858",
 		Date:      "2024-07-08",
 	}
 	result, err := stg.Soldier().UseFuel(use)

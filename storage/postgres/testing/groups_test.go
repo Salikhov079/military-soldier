@@ -18,8 +18,7 @@ func TestCreateGroup(t *testing.T) {
 
 	group := &pb.GroupReq{
 		Name:         "Alpha Group",
-		DepartmentId: "359bbc19-d10c-48f8-89be-e8c83d3f2b7a",
-		CommandersId: "17f88543-39e3-43c2-a8e7-e7ce0c245db6",
+		DepartmentId: "68ed89b8-63c3-443d-8a2c-1264a563c905",
 	}
 	result, err := stg.Group().Create(group)
 
@@ -34,7 +33,7 @@ func TestGetByIdGroup(t *testing.T) {
 	}
 
 	var id pb.ById
-	id.Id = "b015266e-87ef-4cba-aa1c-b70a8380415d"
+	id.Id = "6bf3ee89-4bc2-453d-97c6-69a1697ac556"
 
 	group, err := stg.Group().GetById(&id)
 
@@ -59,10 +58,9 @@ func TestUpdateGroup(t *testing.T) {
 	}
 
 	group := &pb.Group{
-		Id:           "b015266e-87ef-4cba-aa1c-b70a8380415d",
+		Id:           "6bf3ee89-4bc2-453d-97c6-69a1697ac556",
 		Name:         "Updated Alpha Group",
-		Department: &pb.Department{Id: "359bbc19-d10c-48f8-89be-e8c83d3f2b7a"},
-		Commanders: &pb.Commander{Id: "17f88543-39e3-43c2-a8e7-e7ce0c245db6"},
+		Department: &pb.Department{Id: "68ed89b8-63c3-443d-8a2c-1264a563c905"},
 	}
 	result, err := stg.Group().Update(group)
 

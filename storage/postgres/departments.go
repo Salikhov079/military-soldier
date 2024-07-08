@@ -21,28 +21,31 @@ func NewDepartmentStorage(db *sql.DB) *DepartmentStorage {
 func (p *DepartmentStorage) Create(department *pb.Department) (*pb.Void, error) {
 	id := uuid.NewString()
 	query := `
-		INSERT INTO departments (id, name)
-		VALUES ($1, $2)
+		INSERT INTO departments (id, name, commanders_id)
+		VALUES ($1, $2, $3)
 	`
-	_, err := p.db.Exec(query, id, department.Name)
+	_, err := p.db.Exec(query, id, department.Name, department.Commander.Id)
 	return nil, err
 }
 
 func (p *DepartmentStorage) GetById(id *pb.ById) (*pb.Department, error) {
 	query := `
-		SELECT id, name FROM departments 
+		SELECT id, name, commanders_id FROM departments 
 		WHERE id = $1 and deleted_at = 0
 	`
 	row := p.db.QueryRow(query, id.Id)
 
 	var department pb.Department
+	var commander pb.Commander
 
 	err := row.Scan(
 		&department.Id,
-		&department.Name)
+		&department.Name,
+		&commander.Id)
 	if err != nil {
 		return nil, err
 	}
+	department.Commander = &commander
 
 	return &department, nil
 }
@@ -52,7 +55,7 @@ func (p *DepartmentStorage) GetAll(filter *pb.Department) (*pb.AllDepartments, e
 	var arr []interface{}
 	count := 1
 
-	query := `SELECT id, name FROM departments WHERE deleted_at = 0`
+	query := `SELECT id, name, commanders_id FROM departments WHERE deleted_at = 0`
 
 	if len(filter.Name) > 0 {
 		query += fmt.Sprintf(" AND name=$%d", count)
@@ -68,13 +71,16 @@ func (p *DepartmentStorage) GetAll(filter *pb.Department) (*pb.AllDepartments, e
 
 	for rows.Next() {
 		var department pb.Department
+		var commander pb.Commander
 
-		err = rows.Scan(
+		err := rows.Scan(
 			&department.Id,
-			&department.Name)
+			&department.Name,
+			&commander.Id)
 		if err != nil {
 			return nil, err
 		}
+		department.Commander = &commander
 
 		departments.Departments = append(departments.Departments, &department)
 	}
@@ -85,10 +91,10 @@ func (p *DepartmentStorage) GetAll(filter *pb.Department) (*pb.AllDepartments, e
 func (p *DepartmentStorage) Update(department *pb.Department) (*pb.Void, error) {
 	query := `
 		UPDATE departments
-		SET name = $2, updated_at = now()
+		SET name = $2, commanders_id = $3, updated_at = now()
 		WHERE id = $1 and deleted_at = 0
 	`
-	_, err := p.db.Exec(query, department.Id, department.Name)
+	_, err := p.db.Exec(query, department.Id, department.Name, department.Commander.Id)
 	return nil, err
 }
 

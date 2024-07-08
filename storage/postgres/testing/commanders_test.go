@@ -21,7 +21,6 @@ func TestCreateCommander(t *testing.T) {
 		Email:       "john.doe@example.com",
 		DateOfBirth: "1980-01-01",
 		PhoneNumber: "+1234567890",
-		Position:    "o'nbosh",
 	}
 	result, err := stg.Commander().Create(commander)
 
@@ -36,7 +35,7 @@ func TestGetByIdCommander(t *testing.T) {
 	}
 
 	var id pb.ById
-	id.Id = "17f88543-39e3-43c2-a8e7-e7ce0c245db6"
+	id.Id = "92b6362b-b0d1-44b1-9a3e-8b34da4f5b88"
 
 	commander, err := stg.Commander().GetById(&id)
 
@@ -61,7 +60,7 @@ func TestUpdateCommander(t *testing.T) {
 	}
 
 	commander := &pb.Commander{
-		Id:          "17f88543-39e3-43c2-a8e7-e7ce0c245db6",
+		Id:          "92b6362b-b0d1-44b1-9a3e-8b34da4f5b88",
 		Name:        "Jane Doe",
 		Email:       "jane.doe@example.com",
 		DateOfBirth: "1985-02-15",

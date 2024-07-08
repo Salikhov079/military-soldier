@@ -18,6 +18,7 @@ func TestCreateDepartment(t *testing.T) {
 
 	department := &pb.Department{
 		Name: "HR Department",
+		Commander: &pb.Commander{Id: "92b6362b-b0d1-44b1-9a3e-8b34da4f5b88"},
 	}
 	result, err := stg.Department().Create(department)
 
@@ -32,7 +33,7 @@ func TestGetByIdDepartment(t *testing.T) {
 	}
 
 	var id pb.ById
-	id.Id = "359bbc19-d10c-48f8-89be-e8c83d3f2b7a"
+	id.Id = "68ed89b8-63c3-443d-8a2c-1264a563c905"
 
 	department, err := stg.Department().GetById(&id)
 
@@ -57,8 +58,9 @@ func TestUpdateDepartment(t *testing.T) {
 	}
 
 	department := &pb.Department{
-		Id:   "359bbc19-d10c-48f8-89be-e8c83d3f2b7a",
+		Id:   "68ed89b8-63c3-443d-8a2c-1264a563c905",
 		Name: "Updated HR Department",
+		Commander: &pb.Commander{Id: "46705d87-c829-4d2b-9293-2b4b9866e9d0"},
 	}
 	result, err := stg.Department().Update(department)
 
