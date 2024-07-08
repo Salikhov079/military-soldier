@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option go_package = "genprotos/soldiers";
+
+package commanders;
+
+service CommanderService {
+    rpc Create(CommanderReq) returns (Void);
+    rpc Update(Commander) returns (Void);
+    rpc Delete(ById) returns (Void);
+    rpc Get(ById) returns (Commander);
+    rpc GetAll(CommanderReq) returns (AllCommanders);
+}
+
+message ById {
+    string id = 1;
+}
+
+message Void {}
+
+message GetAllFilter{
+    string name =1;
+    string email=2;
+}
+
+message CreateCommand{
+    string name = 2;
+    string email = 3;
+    string date_of_birth = 4;
+    string phone_number = 5;
+}
+
+message CommanderReq {
+    string name = 2;
+    string email = 3;
+    string date_of_birth = 4;
+    string phone_number = 5;
+    string position = 6;
+}
+
+message Commander {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string date_of_birth = 4;
+    string phone_number = 5;
+    string position = 6;
+}
+
+message AllCommanders {
+    repeated Commander commanders = 1;
+}

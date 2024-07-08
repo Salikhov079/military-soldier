@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option go_package = "genprotos/militaries";
+
+package fuel;
+
+import "techniques.proto";
+
+service FuelService {
+    rpc Create(FuelReq) returns (techniques.Void);
+    rpc Update(Fuel) returns (techniques.Void);
+    rpc Delete(techniques.ById) returns (techniques.Void);
+    rpc Get(techniques.ById) returns (Fuel);
+    rpc GetAll(FuelReq) returns (Fuel);
+}
+
+message FuelReq {
+    string type = 2;
+    int32 quantity = 3;
+}
+
+message Fuel {
+    string id = 1;
+    string type = 2;
+    int32 quantity = 3;
+}
+
+message AllFuels {
+    repeated Fuel fuels = 1;
+}

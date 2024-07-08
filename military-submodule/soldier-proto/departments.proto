@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option go_package = "genprotos/soldiers";
+
+package departments;
+
+import "commanders.proto";
+
+service DepartmentService {
+    rpc Create(Department) returns (commanders.Void);
+    rpc Update(Department) returns (commanders.Void);
+    rpc Delete(commanders.ById) returns (commanders.Void);
+    rpc Get(commanders.ById) returns (Department);
+    rpc GetAll(Department) returns (AllDepartments);
+}
+
+message CreateDeportment{
+    string commanders_id = 1;
+    string name = 2;
+}
+message UpdateDeportment{
+    string id =1;
+    string commanders_id = 2;
+    string name = 3;
+}
+message GetAllDepartmentFilter{
+    string name =1;
+}
+message Department {
+    string id = 1;
+    string name = 2;
+    commanders.Commander commander = 3;
+}
+
+message AllDepartments {
+    repeated Department departments = 1;
+}

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "genprotos/soldiers";
+
+package groups;
+
+import "departments.proto";
+import "commanders.proto";
+
+service GroupService {
+    rpc Create(GroupReq) returns (commanders.Void);
+    rpc Update(Group) returns (commanders.Void);
+    rpc Delete(commanders.ById) returns (commanders.Void);
+    rpc Get(commanders.ById) returns (Group);
+    rpc GetAll(GroupReq) returns (AllGroups);
+}
+
+
+message GroupReq {
+    string name = 1;
+    string department_id = 2;
+}
+
+message Group {
+    string id = 1;
+    string name = 2;
+    departments.Department department = 3;
+}
+
+message AllGroups {
+    repeated Group groups = 1;
+}

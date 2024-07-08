@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option go_package = "genprotos/ai";
+
+package AI;
+
+service AiService {
+    rpc CHat(AiCHat) returns (AiCHat);
+}
+
+message AiCHat {
+    string text =1;
+}

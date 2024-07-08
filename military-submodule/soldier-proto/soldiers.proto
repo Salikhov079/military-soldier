@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+option go_package = "genprotos/soldiers";
+
+package soldiers;
+
+import "commanders.proto";
+import "groups.proto";
+
+service SoldierService {
+    rpc Create(SoldierReq) returns (commanders.Void);
+    rpc Update(Soldier) returns (commanders.Void);
+    rpc Delete(commanders.ById) returns (commanders.Void);
+    rpc Get(commanders.ById) returns (Soldier);
+    rpc GetAll(SoldierReq) returns (AllSoldiers);
+    rpc UseBullet(UseB) returns (commanders.Void);
+    rpc UseFuel(UseF) returns (commanders.Void);
+}
+message GetAllSoldierFilter{
+    string name =1;
+    string email=2;
+    string age =3;
+}
+message CreateSoldier {
+    string name = 2;
+     string email = 3;
+    string date_of_birth = 4;
+    string phone_number = 5;
+    groups.Group group = 6;
+    string join_date = 7;
+    string end_date = 8;
+}
+
+message UseB {
+    int32 quantity_weapon = 1;
+    int32 quantity_big_weapon = 2;
+    string soldier_id = 3;
+    string date = 4;
+}
+
+message UseF {
+    int32 diesel = 1;
+    int32 petrol = 2;
+    string soldier_id = 3;
+    string date = 4;
+}
+
+message SoldierReq {
+    string name = 1;
+    string email = 2;
+    string date_of_birth = 3;
+    string phone_number = 4;
+    string group_id = 5;
+    string join_date = 6;
+    string end_date = 7;
+}
+
+message Soldier {
+    string id = 1;
+    string name = 2;
+    string email = 3;
+    string date_of_birth = 4;
+    string phone_number = 5;
+    groups.Group group = 6;
+    string join_date = 7;
+    string end_date = 8;
+}
+
+message AllSoldiers {
+    repeated Soldier soldiers = 1;
+}
+

@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = "genprotos/militaries";
+
+package bullet;
+
+import "techniques.proto";
+
+service BulletService {
+    rpc Create(BulletReq) returns (techniques.Void);
+    rpc Update(Bullet) returns (techniques.Void);
+    rpc Delete(techniques.ById) returns (techniques.Void);
+    rpc Get(techniques.ById) returns (Bullet);
+    rpc GetAll(BulletReq) returns (AllBullets);
+}
+
+message BulletReq {
+    float caliber = 2;
+    string type = 3;
+    int32 quantity = 4;
+}
+
+message Bullet {
+    string id = 1;
+    float caliber = 2;
+    string type = 3;
+    int32 quantity = 4;
+}
+
+message AllBullets {
+    repeated Bullet bullets = 1;
+}

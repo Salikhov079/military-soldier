@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+option go_package = "genprotos/militaries";
+
+package techniques;
+
+service TechniqueService {
+    rpc Create(TechniqueReq) returns (Void);
+    rpc Update(Technique) returns (Void);
+    rpc Delete(ById) returns (Void);
+    rpc Get(ById) returns (Technique);
+    rpc GetAll(TechniqueReq) returns (AllTechnique);
+}
+
+message ById {
+    string id = 1;
+}
+
+message Void {}
+
+message TechniqueReq {
+    string model = 1;
+    string type = 2;
+    int32 quantity = 3;
+}
+
+message Technique {
+    string id = 1;
+    string model = 2;
+    string type = 3;
+    int32 quantity = 4;
+}
+
+message AllTechnique {
+    repeated Technique techniques = 1;
+}
