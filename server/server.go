@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error while connection on db: ", err.Error())
 	}
-	liss, err := net.Listen("tcp", ":8082")
+	liss, err := net.Listen("tcp", ":7070")
 	if err != nil {
 		log.Fatal("Error while connection on tcp: ", err.Error())
 	}

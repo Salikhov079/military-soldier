@@ -20,8 +20,12 @@ func NewSoldierStorage(db *sql.DB) *SoldierStorage {
 }
 
 func (p *SoldierStorage) Create(soldier *pb.SoldierReq) (*pb.Void, error) {
+	err := p.checkAge(soldier)
+	if err != nil {
+		return nil, err
+	}
 	var count int
-	err := p.db.QueryRow("SELECT COUNT(1) FROM soldiers WHERE group_id = $1 GROUP BY group_id", soldier.GroupId).Scan(&count)
+	err = p.db.QueryRow("SELECT COUNT(1) FROM soldiers WHERE group_id = $1 GROUP BY group_id", soldier.GroupId).Scan(&count)
 	if err != nil && err != sql.ErrNoRows || count == 10 {
 		return nil, errors.New("error group is full")
 	}
@@ -214,4 +218,20 @@ func (p *SoldierStorage) UseFuel(use *pb.UseF) (*pb.Void, error) {
 	`
 	_, err = p.db.Exec(query, id, use.Diesel, use.Petrol, use.SoldierId, use.Date)
 	return &pb.Void{}, err
+}
+
+func (p *SoldierStorage) checkAge(soldier *pb.SoldierReq) error {
+	dob, err := time.Parse(time.RFC3339, soldier.DateOfBirth)
+	if err != nil {
+		return err
+	}
+	now := time.Now()
+	ageYears := now.Year() - dob.Year()
+	if now.Before(dob.AddDate(ageYears, 0, 0)) {
+		ageYears--
+	}
+	if ageYears < 18 {
+		return errors.New("invalid age: age is less than 18")
+	}
+	return nil
 }
