@@ -218,3 +218,86 @@ func (p *SoldierStorage) UseFuel(use *pb.UseF) (*pb.Void, error) {
 
 
 
+func (p *SoldierStorage) GetAllWeaponStatistik(filter *pb.GetSoldierStatistik) (*pb.GetSoldierStatistikRes, error) {
+    soldiers := &pb.GetSoldierStatistikRes{}
+    var arr []interface{}
+
+    query := `
+        SELECT soldier_id, SUM(quantity_weapon) AS total_quantity_weapon, 
+		SUM(quantity_big_weapon) AS total_quantity_big_weapon
+        FROM use_bullets
+        WHERE date = $1
+    `
+    arr = append(arr, filter.Date) 
+
+    if len(filter.SoldierId) > 0 {
+        query += ` AND soldier_id = $2`
+        arr = append(arr, filter.SoldierId)
+    }
+
+    query += ` GROUP BY soldier_id`
+
+    rows, err := p.db.Query(query, arr...)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var weapons pb.UseB
+        err = rows.Scan(&weapons.SoldierId, &weapons.QuantityWeapon, &weapons.QuantityBigWeapon)
+        if err != nil {
+            return nil, err
+        }
+        soldiers.UsedWeapons = append(soldiers.UsedWeapons, &weapons)
+    }
+
+    if err = rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return soldiers, nil
+}
+
+
+
+
+func (p *SoldierStorage) GetAllFuelStatistik(filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error) {
+    soldiers := &pb.GetSoldierStatistikFuelRes{}
+    var arr []interface{}
+
+    query := `
+        SELECT soldier_id, SUM(diesel) AS total_diesel, SUM(petrol) AS total_petrol
+        FROM use_fuels
+        WHERE date = $1
+    `
+    arr = append(arr, filter.Date)  
+
+    if len(filter.SoldierId) > 0 {
+        query += ` AND soldier_id = $2`
+        arr = append(arr, filter.SoldierId)
+    }
+
+    query += ` GROUP BY soldier_id`
+
+    rows, err := p.db.Query(query, arr...)
+    if err != nil {
+        return nil, err
+    }
+    defer rows.Close()
+
+    for rows.Next() {
+        var fuel pb.UseF
+        err = rows.Scan(&fuel.SoldierId, &fuel.Diesel, &fuel.Petrol)
+        if err != nil {
+            return nil, err
+        }
+        soldiers.UsedFuel = append(soldiers.UsedFuel, &fuel)
+    }
+
+    if err = rows.Err(); err != nil {
+        return nil, err
+    }
+
+    return soldiers, nil
+}

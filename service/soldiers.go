@@ -60,3 +60,23 @@ func (c *SoldierService) GetAll(ctx context.Context, filter *pb.SoldierReq) (*pb
 
 	return soldiers, err
 }
+
+func (c *SoldierService) StatistikWeapons(ctx context.Context, filter *pb.GetSoldierStatistik) (*pb.GetSoldierStatistikRes, error) {
+	soldiers, err := c.stg.Soldier().GetAllWeaponStatistik(filter)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return soldiers, err
+}
+
+
+
+func (c *SoldierService) GetAllFuelStatistik(ctx context.Context, filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error) {
+	soldiers, err := c.stg.Soldier().GetAllFuelStatistik(filter)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return soldiers, err
+}

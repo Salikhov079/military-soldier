@@ -15,6 +15,8 @@ service SoldierService {
     rpc GetAll(SoldierReq) returns (AllSoldiers);
     rpc UseBullet(UseB) returns (commanders.Void);
     rpc UseFuel(UseF) returns (commanders.Void);
+    rpc StatistikWeapons(GetSoldierStatistik) returns (GetSoldierStatistikRes);
+    rpc FuelStatistik(GetSoldierStatistikFuelRes) returns(GetSoldierStatistikFuelRes);
 }
 message GetAllSoldierFilter{
     string name =1;
@@ -68,5 +70,25 @@ message Soldier {
 
 message AllSoldiers {
     repeated Soldier soldiers = 1;
+}
+
+
+message GetSoldierStatistik{
+    string soldier_id=3;
+    string date =4;
+}
+
+message GetSoldierStatistikRes{
+    repeated UseB used_weapons=1;
+}
+
+
+message GetSoldierStatistikFuel{
+    string soldier_id=1;
+    string date = 2;
+}
+
+message GetSoldierStatistikFuelRes{
+    repeated UseF used_fuel=1;
 }
 

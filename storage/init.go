@@ -19,6 +19,8 @@ type Soldier interface {
 	GetAll(filter *pb.SoldierReq) (*pb.AllSoldiers, error)
 	UseBullet(use *pb.UseB) (*pb.Void, error)
 	UseFuel(use *pb.UseF) (*pb.Void, error)
+	GetAllWeaponStatistik(filter *pb.GetSoldierStatistik) (*pb.GetSoldierStatistikRes, error)
+	GetAllFuelStatistik(filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error)
 }
 
 type Group interface {
