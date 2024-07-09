@@ -24,6 +24,8 @@ const (
 	BulletService_Delete_FullMethodName = "/bullet.BulletService/Delete"
 	BulletService_Get_FullMethodName    = "/bullet.BulletService/Get"
 	BulletService_GetAll_FullMethodName = "/bullet.BulletService/GetAll"
+	BulletService_Add_FullMethodName    = "/bullet.BulletService/Add"
+	BulletService_Sub_FullMethodName    = "/bullet.BulletService/Sub"
 )
 
 // BulletServiceClient is the client API for BulletService service.
@@ -35,6 +37,8 @@ type BulletServiceClient interface {
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
 	Get(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Bullet, error)
 	GetAll(ctx context.Context, in *BulletReq, opts ...grpc.CallOption) (*AllBullets, error)
+	Add(ctx context.Context, in *BulletAddSub, opts ...grpc.CallOption) (*Void, error)
+	Sub(ctx context.Context, in *BulletAddSub, opts ...grpc.CallOption) (*Void, error)
 }
 
 type bulletServiceClient struct {
@@ -90,6 +94,24 @@ func (c *bulletServiceClient) GetAll(ctx context.Context, in *BulletReq, opts ..
 	return out, nil
 }
 
+func (c *bulletServiceClient) Add(ctx context.Context, in *BulletAddSub, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
+	err := c.cc.Invoke(ctx, BulletService_Add_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bulletServiceClient) Sub(ctx context.Context, in *BulletAddSub, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
+	err := c.cc.Invoke(ctx, BulletService_Sub_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BulletServiceServer is the server API for BulletService service.
 // All implementations must embed UnimplementedBulletServiceServer
 // for forward compatibility
@@ -99,6 +121,8 @@ type BulletServiceServer interface {
 	Delete(context.Context, *ById) (*Void, error)
 	Get(context.Context, *ById) (*Bullet, error)
 	GetAll(context.Context, *BulletReq) (*AllBullets, error)
+	Add(context.Context, *BulletAddSub) (*Void, error)
+	Sub(context.Context, *BulletAddSub) (*Void, error)
 	mustEmbedUnimplementedBulletServiceServer()
 }
 
@@ -120,6 +144,12 @@ func (UnimplementedBulletServiceServer) Get(context.Context, *ById) (*Bullet, er
 }
 func (UnimplementedBulletServiceServer) GetAll(context.Context, *BulletReq) (*AllBullets, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedBulletServiceServer) Add(context.Context, *BulletAddSub) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedBulletServiceServer) Sub(context.Context, *BulletAddSub) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sub not implemented")
 }
 func (UnimplementedBulletServiceServer) mustEmbedUnimplementedBulletServiceServer() {}
 
@@ -224,6 +254,42 @@ func _BulletService_GetAll_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BulletService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BulletAddSub)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulletServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BulletService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulletServiceServer).Add(ctx, req.(*BulletAddSub))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BulletService_Sub_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BulletAddSub)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BulletServiceServer).Sub(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BulletService_Sub_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BulletServiceServer).Sub(ctx, req.(*BulletAddSub))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BulletService_ServiceDesc is the grpc.ServiceDesc for BulletService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +316,14 @@ var BulletService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _BulletService_GetAll_Handler,
+		},
+		{
+			MethodName: "Add",
+			Handler:    _BulletService_Add_Handler,
+		},
+		{
+			MethodName: "Sub",
+			Handler:    _BulletService_Sub_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

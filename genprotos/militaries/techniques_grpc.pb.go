@@ -24,6 +24,8 @@ const (
 	TechniqueService_Delete_FullMethodName = "/techniques.TechniqueService/Delete"
 	TechniqueService_Get_FullMethodName    = "/techniques.TechniqueService/Get"
 	TechniqueService_GetAll_FullMethodName = "/techniques.TechniqueService/GetAll"
+	TechniqueService_Add_FullMethodName    = "/techniques.TechniqueService/Add"
+	TechniqueService_Sub_FullMethodName    = "/techniques.TechniqueService/Sub"
 )
 
 // TechniqueServiceClient is the client API for TechniqueService service.
@@ -35,6 +37,8 @@ type TechniqueServiceClient interface {
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
 	Get(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Technique, error)
 	GetAll(ctx context.Context, in *TechniqueReq, opts ...grpc.CallOption) (*AllTechnique, error)
+	Add(ctx context.Context, in *TechniqueAddSub, opts ...grpc.CallOption) (*Void, error)
+	Sub(ctx context.Context, in *TechniqueAddSub, opts ...grpc.CallOption) (*Void, error)
 }
 
 type techniqueServiceClient struct {
@@ -90,6 +94,24 @@ func (c *techniqueServiceClient) GetAll(ctx context.Context, in *TechniqueReq, o
 	return out, nil
 }
 
+func (c *techniqueServiceClient) Add(ctx context.Context, in *TechniqueAddSub, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
+	err := c.cc.Invoke(ctx, TechniqueService_Add_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *techniqueServiceClient) Sub(ctx context.Context, in *TechniqueAddSub, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
+	err := c.cc.Invoke(ctx, TechniqueService_Sub_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TechniqueServiceServer is the server API for TechniqueService service.
 // All implementations must embed UnimplementedTechniqueServiceServer
 // for forward compatibility
@@ -99,6 +121,8 @@ type TechniqueServiceServer interface {
 	Delete(context.Context, *ById) (*Void, error)
 	Get(context.Context, *ById) (*Technique, error)
 	GetAll(context.Context, *TechniqueReq) (*AllTechnique, error)
+	Add(context.Context, *TechniqueAddSub) (*Void, error)
+	Sub(context.Context, *TechniqueAddSub) (*Void, error)
 	mustEmbedUnimplementedTechniqueServiceServer()
 }
 
@@ -120,6 +144,12 @@ func (UnimplementedTechniqueServiceServer) Get(context.Context, *ById) (*Techniq
 }
 func (UnimplementedTechniqueServiceServer) GetAll(context.Context, *TechniqueReq) (*AllTechnique, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedTechniqueServiceServer) Add(context.Context, *TechniqueAddSub) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedTechniqueServiceServer) Sub(context.Context, *TechniqueAddSub) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sub not implemented")
 }
 func (UnimplementedTechniqueServiceServer) mustEmbedUnimplementedTechniqueServiceServer() {}
 
@@ -224,6 +254,42 @@ func _TechniqueService_GetAll_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TechniqueService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TechniqueAddSub)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TechniqueServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TechniqueService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TechniqueServiceServer).Add(ctx, req.(*TechniqueAddSub))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TechniqueService_Sub_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TechniqueAddSub)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TechniqueServiceServer).Sub(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TechniqueService_Sub_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TechniqueServiceServer).Sub(ctx, req.(*TechniqueAddSub))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TechniqueService_ServiceDesc is the grpc.ServiceDesc for TechniqueService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +316,14 @@ var TechniqueService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _TechniqueService_GetAll_Handler,
+		},
+		{
+			MethodName: "Add",
+			Handler:    _TechniqueService_Add_Handler,
+		},
+		{
+			MethodName: "Sub",
+			Handler:    _TechniqueService_Sub_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

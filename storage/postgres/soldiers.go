@@ -87,8 +87,23 @@ func (p *SoldierStorage) GetAll(filter *pb.SoldierReq) (*pb.AllSoldiers, error) 
 	if len(filter.DateOfBirth) > 0 {
 		query += fmt.Sprintf(" AND EXTRACT(YEAR FROM AGE(date_of_birth)) =$%d", count)
 		count++
-		arr = append(arr, filter.Email)
+		arr = append(arr, filter.DateOfBirth)
 	}
+
+	if len(filter.JoinDate)>0 {
+		query+= fmt.Sprintf(` AND EXTRACT(MONTH FROM join_date) = EXTRACT(MONTH FROM $%d::date)
+			AND EXTRACT(YEAR FROM join_date) = EXTRACT(YEAR FROM $%d::date);`, count, count)
+		count++
+		arr=append(arr, filter.JoinDate)
+	}
+
+	if len(filter.EndDate)>0 {
+		query+= fmt.Sprintf(` AND EXTRACT(MONTH FROM end_date) = EXTRACT(MONTH FROM $%d::date)
+			AND EXTRACT(YEAR FROM end_date) = EXTRACT(YEAR FROM $%d::date);`, count, count)
+		count++
+		arr=append(arr, filter.EndDate)
+	}
+	
 
 	rows, err := p.db.Query(query, arr...)
 	if err != nil {
@@ -147,7 +162,7 @@ func (p *SoldierStorage) UseBullet(use *pb.UseB) (*pb.Void, error) {
 	rows, err := p.db.Query(query, use.SoldierId)
 	if err != nil {
 		return nil, err
-	}	
+	}
 	defer rows.Close()
 	var data1, data2 int
 
@@ -188,7 +203,7 @@ func (p *SoldierStorage) UseFuel(use *pb.UseF) (*pb.Void, error) {
 	rows, err := p.db.Query(query, use.SoldierId)
 	if err != nil {
 		return nil, err
-	}	
+	}
 	defer rows.Close()
 	var data1, data2 int
 
@@ -234,4 +249,85 @@ func (p *SoldierStorage) checkAge(soldier *pb.SoldierReq) error {
 		return errors.New("invalid age: age is less than 18")
 	}
 	return nil
+}
+
+func (p *SoldierStorage) GetAllWeaponStatistik(filter *pb.GetSoldierStatistik) (*pb.GetSoldierStatistikRes, error) {
+	soldiers := &pb.GetSoldierStatistikRes{}
+	var arr []interface{}
+
+	query := `
+        SELECT soldier_id, SUM(quantity_weapon) AS total_quantity_weapon, 
+    SUM(quantity_big_weapon) AS total_quantity_big_weapon
+        FROM use_bullets
+        WHERE date = $1
+    `
+	arr = append(arr, filter.Date)
+
+	if len(filter.SoldierId) > 0 {
+		query += ` AND soldier_id = $2`
+		arr = append(arr, filter.SoldierId)
+	}
+
+	query += ` GROUP BY soldier_id`
+
+	rows, err := p.db.Query(query, arr...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var weapons pb.UseB
+		err = rows.Scan(&weapons.SoldierId, &weapons.QuantityWeapon, &weapons.QuantityBigWeapon)
+		if err != nil {
+			return nil, err
+		}
+		soldiers.UsedWeapons = append(soldiers.UsedWeapons, &weapons)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return soldiers, nil
+}
+
+func (p *SoldierStorage) GetAllFuelStatistik(filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error) {
+	soldiers := &pb.GetSoldierStatistikFuelRes{}
+	var arr []interface{}
+
+	query := `
+        SELECT soldier_id, SUM(diesel) AS total_diesel, SUM(petrol) AS total_petrol
+        FROM use_fuels
+        WHERE date = $1
+    `
+	arr = append(arr, filter.Date)
+
+	if len(filter.SoldierId) > 0 {
+		query += ` AND soldier_id = $2`
+		arr = append(arr, filter.SoldierId)
+	}
+
+	query += ` GROUP BY soldier_id`
+
+	rows, err := p.db.Query(query, arr...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var fuel pb.UseF
+		err = rows.Scan(&fuel.SoldierId, &fuel.Diesel, &fuel.Petrol)
+		if err != nil {
+			return nil, err
+		}
+		soldiers.UsedFuel = append(soldiers.UsedFuel, &fuel)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return soldiers, nil
 }

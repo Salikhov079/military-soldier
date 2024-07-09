@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SoldierService_Create_FullMethodName    = "/soldiers.SoldierService/Create"
-	SoldierService_Update_FullMethodName    = "/soldiers.SoldierService/Update"
-	SoldierService_Delete_FullMethodName    = "/soldiers.SoldierService/Delete"
-	SoldierService_Get_FullMethodName       = "/soldiers.SoldierService/Get"
-	SoldierService_GetAll_FullMethodName    = "/soldiers.SoldierService/GetAll"
-	SoldierService_UseBullet_FullMethodName = "/soldiers.SoldierService/UseBullet"
-	SoldierService_UseFuel_FullMethodName   = "/soldiers.SoldierService/UseFuel"
+	SoldierService_Create_FullMethodName           = "/soldiers.SoldierService/Create"
+	SoldierService_Update_FullMethodName           = "/soldiers.SoldierService/Update"
+	SoldierService_Delete_FullMethodName           = "/soldiers.SoldierService/Delete"
+	SoldierService_Get_FullMethodName              = "/soldiers.SoldierService/Get"
+	SoldierService_GetAll_FullMethodName           = "/soldiers.SoldierService/GetAll"
+	SoldierService_UseBullet_FullMethodName        = "/soldiers.SoldierService/UseBullet"
+	SoldierService_UseFuel_FullMethodName          = "/soldiers.SoldierService/UseFuel"
+	SoldierService_StatistikWeapons_FullMethodName = "/soldiers.SoldierService/StatistikWeapons"
+	SoldierService_FuelStatistik_FullMethodName    = "/soldiers.SoldierService/FuelStatistik"
 )
 
 // SoldierServiceClient is the client API for SoldierService service.
@@ -39,6 +41,8 @@ type SoldierServiceClient interface {
 	GetAll(ctx context.Context, in *SoldierReq, opts ...grpc.CallOption) (*AllSoldiers, error)
 	UseBullet(ctx context.Context, in *UseB, opts ...grpc.CallOption) (*Void, error)
 	UseFuel(ctx context.Context, in *UseF, opts ...grpc.CallOption) (*Void, error)
+	StatistikWeapons(ctx context.Context, in *GetSoldierStatistik, opts ...grpc.CallOption) (*GetSoldierStatistikRes, error)
+	FuelStatistik(ctx context.Context, in *GetSoldierStatistikFuel, opts ...grpc.CallOption) (*GetSoldierStatistikFuelRes, error)
 }
 
 type soldierServiceClient struct {
@@ -112,6 +116,24 @@ func (c *soldierServiceClient) UseFuel(ctx context.Context, in *UseF, opts ...gr
 	return out, nil
 }
 
+func (c *soldierServiceClient) StatistikWeapons(ctx context.Context, in *GetSoldierStatistik, opts ...grpc.CallOption) (*GetSoldierStatistikRes, error) {
+	out := new(GetSoldierStatistikRes)
+	err := c.cc.Invoke(ctx, SoldierService_StatistikWeapons_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *soldierServiceClient) FuelStatistik(ctx context.Context, in *GetSoldierStatistikFuel, opts ...grpc.CallOption) (*GetSoldierStatistikFuelRes, error) {
+	out := new(GetSoldierStatistikFuelRes)
+	err := c.cc.Invoke(ctx, SoldierService_FuelStatistik_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SoldierServiceServer is the server API for SoldierService service.
 // All implementations must embed UnimplementedSoldierServiceServer
 // for forward compatibility
@@ -123,6 +145,8 @@ type SoldierServiceServer interface {
 	GetAll(context.Context, *SoldierReq) (*AllSoldiers, error)
 	UseBullet(context.Context, *UseB) (*Void, error)
 	UseFuel(context.Context, *UseF) (*Void, error)
+	StatistikWeapons(context.Context, *GetSoldierStatistik) (*GetSoldierStatistikRes, error)
+	FuelStatistik(context.Context, *GetSoldierStatistikFuel) (*GetSoldierStatistikFuelRes, error)
 	mustEmbedUnimplementedSoldierServiceServer()
 }
 
@@ -150,6 +174,12 @@ func (UnimplementedSoldierServiceServer) UseBullet(context.Context, *UseB) (*Voi
 }
 func (UnimplementedSoldierServiceServer) UseFuel(context.Context, *UseF) (*Void, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UseFuel not implemented")
+}
+func (UnimplementedSoldierServiceServer) StatistikWeapons(context.Context, *GetSoldierStatistik) (*GetSoldierStatistikRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StatistikWeapons not implemented")
+}
+func (UnimplementedSoldierServiceServer) FuelStatistik(context.Context, *GetSoldierStatistikFuel) (*GetSoldierStatistikFuelRes, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FuelStatistik not implemented")
 }
 func (UnimplementedSoldierServiceServer) mustEmbedUnimplementedSoldierServiceServer() {}
 
@@ -290,6 +320,42 @@ func _SoldierService_UseFuel_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SoldierService_StatistikWeapons_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSoldierStatistik)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SoldierServiceServer).StatistikWeapons(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SoldierService_StatistikWeapons_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SoldierServiceServer).StatistikWeapons(ctx, req.(*GetSoldierStatistik))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SoldierService_FuelStatistik_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSoldierStatistikFuel)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SoldierServiceServer).FuelStatistik(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SoldierService_FuelStatistik_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SoldierServiceServer).FuelStatistik(ctx, req.(*GetSoldierStatistikFuel))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SoldierService_ServiceDesc is the grpc.ServiceDesc for SoldierService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -324,6 +390,14 @@ var SoldierService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UseFuel",
 			Handler:    _SoldierService_UseFuel_Handler,
+		},
+		{
+			MethodName: "StatistikWeapons",
+			Handler:    _SoldierService_StatistikWeapons_Handler,
+		},
+		{
+			MethodName: "FuelStatistik",
+			Handler:    _SoldierService_FuelStatistik_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

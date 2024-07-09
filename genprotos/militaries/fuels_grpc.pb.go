@@ -24,6 +24,8 @@ const (
 	FuelService_Delete_FullMethodName = "/fuel.FuelService/Delete"
 	FuelService_Get_FullMethodName    = "/fuel.FuelService/Get"
 	FuelService_GetAll_FullMethodName = "/fuel.FuelService/GetAll"
+	FuelService_Add_FullMethodName    = "/fuel.FuelService/Add"
+	FuelService_Sub_FullMethodName    = "/fuel.FuelService/Sub"
 )
 
 // FuelServiceClient is the client API for FuelService service.
@@ -34,7 +36,9 @@ type FuelServiceClient interface {
 	Update(ctx context.Context, in *Fuel, opts ...grpc.CallOption) (*Void, error)
 	Delete(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Void, error)
 	Get(ctx context.Context, in *ById, opts ...grpc.CallOption) (*Fuel, error)
-	GetAll(ctx context.Context, in *FuelReq, opts ...grpc.CallOption) (*Fuel, error)
+	GetAll(ctx context.Context, in *FuelReq, opts ...grpc.CallOption) (*AllFuels, error)
+	Add(ctx context.Context, in *FuelAddSub, opts ...grpc.CallOption) (*Void, error)
+	Sub(ctx context.Context, in *FuelAddSub, opts ...grpc.CallOption) (*Void, error)
 }
 
 type fuelServiceClient struct {
@@ -81,9 +85,27 @@ func (c *fuelServiceClient) Get(ctx context.Context, in *ById, opts ...grpc.Call
 	return out, nil
 }
 
-func (c *fuelServiceClient) GetAll(ctx context.Context, in *FuelReq, opts ...grpc.CallOption) (*Fuel, error) {
-	out := new(Fuel)
+func (c *fuelServiceClient) GetAll(ctx context.Context, in *FuelReq, opts ...grpc.CallOption) (*AllFuels, error) {
+	out := new(AllFuels)
 	err := c.cc.Invoke(ctx, FuelService_GetAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fuelServiceClient) Add(ctx context.Context, in *FuelAddSub, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
+	err := c.cc.Invoke(ctx, FuelService_Add_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fuelServiceClient) Sub(ctx context.Context, in *FuelAddSub, opts ...grpc.CallOption) (*Void, error) {
+	out := new(Void)
+	err := c.cc.Invoke(ctx, FuelService_Sub_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -98,7 +120,9 @@ type FuelServiceServer interface {
 	Update(context.Context, *Fuel) (*Void, error)
 	Delete(context.Context, *ById) (*Void, error)
 	Get(context.Context, *ById) (*Fuel, error)
-	GetAll(context.Context, *FuelReq) (*Fuel, error)
+	GetAll(context.Context, *FuelReq) (*AllFuels, error)
+	Add(context.Context, *FuelAddSub) (*Void, error)
+	Sub(context.Context, *FuelAddSub) (*Void, error)
 	mustEmbedUnimplementedFuelServiceServer()
 }
 
@@ -118,8 +142,14 @@ func (UnimplementedFuelServiceServer) Delete(context.Context, *ById) (*Void, err
 func (UnimplementedFuelServiceServer) Get(context.Context, *ById) (*Fuel, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedFuelServiceServer) GetAll(context.Context, *FuelReq) (*Fuel, error) {
+func (UnimplementedFuelServiceServer) GetAll(context.Context, *FuelReq) (*AllFuels, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
+}
+func (UnimplementedFuelServiceServer) Add(context.Context, *FuelAddSub) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Add not implemented")
+}
+func (UnimplementedFuelServiceServer) Sub(context.Context, *FuelAddSub) (*Void, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Sub not implemented")
 }
 func (UnimplementedFuelServiceServer) mustEmbedUnimplementedFuelServiceServer() {}
 
@@ -224,6 +254,42 @@ func _FuelService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FuelService_Add_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FuelAddSub)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FuelServiceServer).Add(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FuelService_Add_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FuelServiceServer).Add(ctx, req.(*FuelAddSub))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FuelService_Sub_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FuelAddSub)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FuelServiceServer).Sub(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FuelService_Sub_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FuelServiceServer).Sub(ctx, req.(*FuelAddSub))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FuelService_ServiceDesc is the grpc.ServiceDesc for FuelService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -250,6 +316,14 @@ var FuelService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetAll",
 			Handler:    _FuelService_GetAll_Handler,
+		},
+		{
+			MethodName: "Add",
+			Handler:    _FuelService_Add_Handler,
+		},
+		{
+			MethodName: "Sub",
+			Handler:    _FuelService_Sub_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

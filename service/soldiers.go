@@ -30,7 +30,7 @@ func (c *SoldierService) Update(ctx context.Context, soldier *pb.Soldier) (*pb.V
 	if err != nil {
 		log.Print(err)
 	}
-	
+
 	return void, err
 }
 
@@ -48,12 +48,48 @@ func (c *SoldierService) GetById(ctx context.Context, id *pb.ById) (*pb.Soldier,
 	if err != nil {
 		log.Print(err)
 	}
-	
+
 	return soldier, err
 }
 
 func (c *SoldierService) GetAll(ctx context.Context, filter *pb.SoldierReq) (*pb.AllSoldiers, error) {
 	soldiers, err := c.stg.Soldier().GetAll(filter)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return soldiers, err
+}
+
+func (c *SoldierService) StatistikWeapons(ctx context.Context, filter *pb.GetSoldierStatistik) (*pb.GetSoldierStatistikRes, error) {
+	soldiers, err := c.stg.Soldier().GetAllWeaponStatistik(filter)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return soldiers, err
+}
+
+func (c *SoldierService) FuelStatistik(ctx context.Context, filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error) {
+	soldiers, err := c.stg.Soldier().GetAllFuelStatistik(filter)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return soldiers, err
+}
+
+func (c *SoldierService) UseBullet(ctx context.Context, use *pb.UseB) (*pb.Void, error) {
+	soldiers, err := c.stg.Soldier().UseBullet(use)
+	if err != nil {
+		log.Print(err)
+	}
+
+	return soldiers, err
+}
+
+func (c *SoldierService) UseFuel(ctx context.Context, use *pb.UseF) (*pb.Void, error) {
+	soldiers, err := c.stg.Soldier().UseFuel(use)
 	if err != nil {
 		log.Print(err)
 	}
