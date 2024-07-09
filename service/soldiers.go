@@ -72,7 +72,7 @@ func (c *SoldierService) StatistikWeapons(ctx context.Context, filter *pb.GetSol
 
 
 
-func (c *SoldierService) GetAllFuelStatistik(ctx context.Context, filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error) {
+func (c *SoldierService) FuelStatistik(ctx context.Context, filter *pb.GetSoldierStatistikFuel) (*pb.GetSoldierStatistikFuelRes, error) {
 	soldiers, err := c.stg.Soldier().GetAllFuelStatistik(filter)
 	if err != nil {
 		log.Print(err)
